@@ -1,0 +1,3 @@
+sam build
+sam deploy --parameter-overrides EnvironmentValue=itay TagCreatedDate=20240622 TagCreatedBy=itay.moav@email.sitel.org Subdomain=templates --config-env itay
+aws s3 sync static-pages s3://templates.itay.link

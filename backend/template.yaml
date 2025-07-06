@@ -1,0 +1,182 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  The Akelas project. AI based tools/ GPTs for none PHI and PII based systems
+
+Parameters:
+  Environment: 
+    AllowedValues:
+      - "itay"
+      - "samba"
+    Description: "Which environment is this?"
+    Type: String
+  TagCreatedBy:
+    Description: "itay.moav@email.sitel.org"
+    Type: String
+    Default: "itay.moav@email.sitel.org"
+  TagCreatedDate:
+    Type: String
+  DefaultCachePolicy:
+    Type: String
+    Default: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Api:
+      Cors:
+          AllowMethods: "'GET,POST,OPTIONS'"
+          AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          AllowOrigin: "'*'"
+
+# ------------------------------------ S3 for React apps --------------------------------- #
+Resources:
+  UIBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join [".", [!Ref Environment, "akelas" ]]
+      Tags: 
+        - Key: CreatedBy
+          Value: !Ref TagCreatedBy
+        - Key: DateCreated
+          Value: !Ref TagCreatedDate
+        - Key: Stack
+          Value: !Ref AWS::StackName
+        - Key: Purpose
+          Value: "The Akelas project React"
+        - Key: Env
+          Value: !Ref Environment
+
+  UIBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UIBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 
+              - S3:GetObject
+            Resource: !Sub arn:aws:s3:::${UIBucket}/*
+
+# --------------------------- DISTRIBUTION TEMPLATE -------------------------------------- #
+# How to get the OAC id !GetAtt CloudFrontOriginAccessControl.Id TODO create it here
+# https://hayao-k.dev/migrating-cloudfront-oai-to-oac-using-cloudformation
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties: 
+      OriginAccessControlConfig:
+        Description: Default Origin Access Control
+        Name: !Ref AWS::StackName
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  UIDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Ref UIBucket
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+        - Id:  !GetAtt UIBucket.RegionalDomainName
+          DomainName: !GetAtt UIBucket.RegionalDomainName
+          S3OriginConfig:
+            OriginAccessIdentity: ''
+          OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+        DefaultCacheBehavior:
+          Compress: false
+          TargetOriginId: !GetAtt UIBucket.RegionalDomainName
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: !Ref DefaultCachePolicy
+        DefaultRootObject: "/index.html"
+        CustomErrorResponses:
+          - 
+            ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+            ErrorCachingMinTTL: 3
+          - 
+            ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+            ErrorCachingMinTTL: 3
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: whitelist
+            Locations:
+            - US
+            - CA
+            - IL
+      Tags: 
+        - Key: CreatedBy
+          Value: !Ref TagCreatedBy
+        - Key: DateCreated
+          Value: !Ref TagCreatedDate
+        - Key: Stack
+          Value: !Ref AWS::StackName
+        - Key: Env
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: "Cloudfront distribution for the Akelas project"
+
+  # ------------------------ FUNCTION BACKEND, right now, just smartgroups ----------------------------- #
+  SmartGroupsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: AKELAS-SMARTGROUPS
+      CodeUri: smartgroups/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Timeout: 900
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: 
+                - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.anthropic.claude-3-7-sonnet-20250219-v1:0
+                - arn:aws:bedrock:*::foundation-model/anthropic.claude-3-7-sonnet-20250219-v1:0
+      Tags: 
+        CreatedBy: !Ref TagCreatedBy
+        DateCreated: !Ref TagCreatedDate
+        Stack: !Ref AWS::StackName
+        Env: !Ref Environment
+        Purpose: "The Akelas Project backend - smartgroups"
+      Events:
+        SmartgroupsPing:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /smartgroups/ping
+            Method: get
+            
+        SmartgroupsGenerate:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /smartgroups/generate
+            Method: post
+           
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  SmartgroupsApi:
+    Description: "API Gateway endpoint URL for Prod stage for all Smartgroups function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/smartgroups/"
+  SmartGroupsFunction:
+    Description: "SmartGroups Lambda Function ARN"
+    Value: !GetAtt SmartGroupsFunction.Arn
+  SmartGroupsFunctionIamRole:
+    Description: "Implicit IAM Role created for SmartGroupsFunction"
+    Value: !GetAtt SmartGroupsFunctionRole.Arn
+  UIBucketId:
+    Description: "The name of the bucket to upload react code into, to be used in env"
+    Value: !Ref UIBucket
+  DomainName:
+    Description: "Root url for the Akelas Project"
+    Value: !GetAtt UIDistribution.DomainName

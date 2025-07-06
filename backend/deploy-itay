@@ -1,0 +1,5 @@
+sam build
+sam deploy --parameter-overrides Environment=itay TagCreatedDate=20250617 --config-env itay
+
+# url: d3v7ehi2qf97iw.cloudfront.net
+# api: https://j64ixgath1.execute-api.us-east-1.amazonaws.com/Prod/smartgroups/

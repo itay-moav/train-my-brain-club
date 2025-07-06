@@ -1,0 +1,49 @@
+# More information about the configuration file can be found here:
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
+version = 0.1
+
+[default]
+[default.deploy]
+[default.deploy.parameters]
+[itay]
+[itay.deploy]
+[itay.deploy.parameters]
+stack_name = "THE-AKELAS-PROJECT"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+image_repositories = []
+s3_prefix = "THE-AKELAS-PROJECT"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-t215k2yjqspl"
+
+[samba]
+[samba.deploy]
+[samba.deploy.parameters]
+stack_name = "THE-AKELAS-PROJECT"
+region = "us-east-1"
+profile = "samba"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+disable_rollback = true
+image_repositories = []
+s3_prefix = "THE-AKELAS-PROJECT"
+resolve_s3 = true
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.package.parameters]
+resolve_s3 = true
+
+[default.sync.parameters]
+watch = true
+
+[default.local_start_api.parameters]
+warm_containers = "EAGER"
+
+[default.local_start_lambda.parameters]
+warm_containers = "EAGER"

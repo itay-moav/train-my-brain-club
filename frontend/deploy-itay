@@ -1,0 +1,6 @@
+rm -f .env.local
+cp .env.itay .env.local
+vite build
+aws s3 sync dist s3://itay.akelas --profile lmsuser --delete
+rm -f .env.local
+aws cloudfront create-invalidation --distribution-id E259A8Y60HLZ5S --paths "/*" --profile lmsuser
