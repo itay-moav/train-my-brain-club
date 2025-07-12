@@ -2,13 +2,16 @@ import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getGameById, getGameProgress, setActiveGame } from '../store/gameSlice/gameSlice';
+import GameSwitcher from '../components/GameSwitcher';
 
 // Import all games
 import MemoryGame from '../games/memory/MemoryGame';
+import TypeToSurviveGame from '../games/typetosurvive/TypeToSurviveGame';
 
 // Game component mapping
 const GAME_COMPONENTS = {
   'memory': MemoryGame,
+  'typetosurvive': TypeToSurviveGame,
   // Add more games here as they're created
 };
 
@@ -43,7 +46,14 @@ const GamePage = () => {
     return <div className="text-center text-white py-16">Game not implemented yet</div>;
   }
   
-  return <GameComponent />;
+  return (
+    <div className="flex flex-col items-center w-full px-4">
+      <div className="w-full max-w-2xl min-h-[500px] my-8">
+        <GameComponent />
+      </div>
+      <GameSwitcher currentGameId={gameId} />
+    </div>
+  );
 };
 
 export default GamePage;

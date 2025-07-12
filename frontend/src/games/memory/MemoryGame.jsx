@@ -334,31 +334,40 @@ const MemoryGame = () => {
   };
   
   return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <Card className="w-full max-w-md text-center relative">
-        {/* Pause button */}
-        <div className="absolute top-4 right-4">
-          {gameState !== 'ready' && (
+    <div className="flex flex-col items-center justify-center h-full w-full">
+      <Card className="w-full text-center relative min-h-[450px] flex flex-col">
+        {/* Game controls */}
+        <div className="flex justify-between mb-4">
+          {/* Home button */}
+          <div>
             <button 
-              onClick={togglePause}
-              className="bg-gray-700 hover:bg-gray-600 p-2 rounded-full"
+              onClick={leaveGame}
+              className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg flex items-center justify-center"
+              title="Return Home"
             >
-              {isPaused ? '▶️' : '⏸️'}
+              <span className="text-sm">🏠 Home</span>
             </button>
-          )}
+          </div>
+          
+          {/* Title in center */}
+          <div className="flex-grow mx-4">
+            <Title>Memory Master</Title>
+          </div>
+          
+          {/* Pause button */}
+          <div>
+            {gameState !== 'ready' && (
+              <button 
+                onClick={togglePause}
+                className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg flex items-center justify-center"
+                title={isPaused ? "Resume Game" : "Pause Game"}
+              >
+                <span className="text-sm">{isPaused ? '▶️ Resume' : '⏸️ Pause'}</span>
+              </button>
+            )}
+          </div>
         </div>
         
-        {/* Home button */}
-        <div className="absolute top-4 left-4">
-          <button 
-            onClick={leaveGame}
-            className="bg-gray-700 hover:bg-gray-600 p-2 rounded-full"
-          >
-            🏠
-          </button>
-        </div>
-        
-        <Title>Memory Master</Title>
         <Subtitle>
           {(() => {
             // Get real-time level config for UI
@@ -375,7 +384,7 @@ const MemoryGame = () => {
           )}
         </div>
         
-        <div className="mb-8 text-gray-300">
+        <div className="flex-grow text-gray-300">
           {gameState === 'ready' && (
             <div>
               <p>

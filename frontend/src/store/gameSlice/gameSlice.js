@@ -6,9 +6,27 @@ import { MEMORY_GAME_PARAMS } from '../../games/config/gameParameters';
 const generateInitialGameProgress = () => {
   const progress = {};
   
+  // Get all game IDs from both GAMES array and GAME_UNLOCK_REQUIREMENTS
+  const allGameIds = new Set();
+  
+  // Add games from the main GAMES array
   GAMES.forEach(game => {
-    progress[game.id] = {
-      unlocked: game.initiallyUnlocked,
+    allGameIds.add(game.id);
+  });
+  
+  // Add any games mentioned in unlock requirements
+  Object.keys(GAME_UNLOCK_REQUIREMENTS).forEach(gameId => {
+    allGameIds.add(gameId);
+  });
+  
+  // Create progress entries for all games
+  Array.from(allGameIds).forEach(gameId => {
+    // Find the game in GAMES array if it exists
+    const game = GAMES.find(g => g.id === gameId);
+    
+    progress[gameId] = {
+      // Use game config if available, otherwise default to locked
+      unlocked: game ? game.initiallyUnlocked : false,
       currentLevel: 1,
       maxLevelReached: 0,
       completed: false,
@@ -108,11 +126,15 @@ const gameSlice = createSlice({
       
       // Check for unlocking other games
       Object.entries(GAME_UNLOCK_REQUIREMENTS).forEach(([targetGameId, requirement]) => {
+        // First verify targetGameId exists in gameProgress
         if (
+          state.gameProgress[targetGameId] && // Make sure the game exists in state
           requirement.requiredGame === gameId && 
           level >= requirement.requiredLevel &&
           !state.gameProgress[targetGameId].unlocked
         ) {
+          console.log(`Unlocking game: ${targetGameId} at level ${level}`);
+          
           // Unlock the game
           state.gameProgress[targetGameId].unlocked = true;
           
@@ -186,7 +208,26 @@ const gameSlice = createSlice({
     // Load saved progress from localStorage
     loadSavedProgress: (state, action) => {
       if (action.payload) {
-        state.gameProgress = action.payload;
+        // Get fresh initial progress with all current games
+        const initialProgress = generateInitialGameProgress();
+        
+        // Merge saved progress with initial progress, keeping any new games
+        state.gameProgress = {
+          ...initialProgress,  // Start with all current games
+          ...action.payload,  // Override with saved progress
+        };
+        
+        // Make sure all GAME_UNLOCK_REQUIREMENTS entries exist
+        Object.keys(GAME_UNLOCK_REQUIREMENTS).forEach(gameId => {
+          if (!state.gameProgress[gameId]) {
+            state.gameProgress[gameId] = {
+              unlocked: false,
+              currentLevel: 1,
+              maxLevelReached: 0,
+              completed: false,
+            };
+          }
+        });
       }
     },
     

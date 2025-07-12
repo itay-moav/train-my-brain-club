@@ -75,7 +75,8 @@ export const MEMORY_GAME_PARAMS = {
  */
 export const GAME_UNLOCK_REQUIREMENTS = {
   // Games unlocked by memory progress
-  'reaction': { requiredGame: 'memory', requiredLevel: 5 },
+  'typetosurvive': { requiredGame: 'memory', requiredLevel: 2 },
+  'reaction': { requiredGame: 'memory', requiredLevel: 7 },
   'pattern': { requiredGame: 'memory', requiredLevel: 8 },
   
   // Future games (currently not implemented)

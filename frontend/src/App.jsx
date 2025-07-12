@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { appInit } from './store/applicationSlice';
 import { loadSavedProgress } from './store/gameSlice/gameSlice';
+import GameUnlockNotification from "./components/GameUnlockNotification";
+import ResetGameData from "./components/ResetGameData";
 
 //LAYOUT(s)
 import Layout from "./components/layout/layout.jsx";
@@ -36,15 +38,19 @@ function App() {
   }, [dispatch]);
 
   return (
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="/games" element={<GamesListPage />} />
-          <Route path="/game/:gameId" element={<GamePage />} />
-          <Route path="/test-memory" element={<TestMemory />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+      <>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="/games" element={<GamesListPage />} />
+            <Route path="/game/:gameId" element={<GamePage />} />
+            <Route path="/test-memory" element={<TestMemory />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+        <GameUnlockNotification />
+        <ResetGameData />
+      </>
   )
 }
 export default App;
