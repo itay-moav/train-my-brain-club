@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Dark Navy Background -->
+  <rect width="512" height="512" rx="100" fill="#0F172A"/>
+  
+  <!-- Brain Growth Spiral -->
+  <g transform="translate(256, 256)">
+    <!-- Outer amber spiral segments -->
+    <path d="M -40,120 C -100,100 -130,40 -120,-20 C -110,-80 -60,-120 0,-120 C 60,-120 110,-80 120,-20 C 130,40 100,100 40,120" 
+          fill="none" stroke="#F59E0B" stroke-width="24" stroke-linecap="round"/>
+    <path d="M -30,90 C -75,75 -97.5,30 -90,-15 C -82.5,-60 -45,-90 0,-90 C 45,-90 82.5,-60 90,-15 C 97.5,30 75,75 30,90" 
+          fill="none" stroke="#F59E0B" stroke-width="22" stroke-linecap="round"/>
+    
+    <!-- Middle magenta spiral segments -->
+    <path d="M -20,60 C -50,50 -65,20 -60,-10 C -55,-40 -30,-60 0,-60 C 30,-60 55,-40 60,-10 C 65,20 50,50 20,60" 
+          fill="none" stroke="#C026D3" stroke-width="20" stroke-linecap="round"/>
+    <path d="M -15,45 C -37.5,37.5 -48.75,15 -45,-7.5 C -41.25,-30 -22.5,-45 0,-45 C 22.5,-45 41.25,-30 45,-7.5 C 48.75,15 37.5,37.5 15,45" 
+          fill="none" stroke="#C026D3" stroke-width="18" stroke-linecap="round"/>
+    
+    <!-- Inner cyan spiral segments -->
+    <path d="M -10,30 C -25,25 -32.5,10 -30,-5 C -27.5,-20 -15,-30 0,-30 C 15,-30 27.5,-20 30,-5 C 32.5,10 25,25 10,30" 
+          fill="none" stroke="#22D3EE" stroke-width="16" stroke-linecap="round"/>
+    <path d="M -5,15 C -12.5,12.5 -16.25,5 -15,-2.5 C -13.75,-10 -7.5,-15 0,-15 C 7.5,-15 13.75,-10 15,-2.5 C 16.25,5 12.5,12.5 5,15" 
+          fill="none" stroke="#22D3EE" stroke-width="14" stroke-linecap="round"/>
+    
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="7" fill="#22D3EE"/>
+    
+    <!-- Brain connection lines -->
+    <path d="M -20,60 L -40,120" stroke="#C026D3" stroke-width="3" opacity="0.7"/>
+    <path d="M 20,60 L 40,120" stroke="#C026D3" stroke-width="3" opacity="0.7"/>
+    <path d="M -60,-10 L -120,-20" stroke="#C026D3" stroke-width="3" opacity="0.7"/>
+    <path d="M 60,-10 L 120,-20" stroke="#C026D3" stroke-width="3" opacity="0.7"/>
+    
+    <!-- Brain nodes -->
+    <circle cx="-40" cy="120" r="6" fill="#F59E0B"/>
+    <circle cx="40" cy="120" r="6" fill="#F59E0B"/>
+    <circle cx="-120" cy="-20" r="6" fill="#F59E0B"/>
+    <circle cx="120" cy="-20" r="6" fill="#F59E0B"/>
+    <circle cx="-60" cy="-10" r="5" fill="#C026D3"/>
+    <circle cx="60" cy="-10" r="5" fill="#C026D3"/>
+    <circle cx="-20" cy="60" r="5" fill="#C026D3"/>
+    <circle cx="20" cy="60" r="5" fill="#C026D3"/>
+  </g>
+</svg>
